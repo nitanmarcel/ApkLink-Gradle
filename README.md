@@ -2,13 +2,22 @@
 
 A Gradle plugin for Android projects that converts APK files to JAR libraries and automatically adds them as compile only dependencies to your project.
 
+## Memory Requirements
+
+Due to the resource-intensive nature of APK processing, it's recommended to allocate at least 4GB of memory to Gradle:
+
+Add the following to your `gradle.properties` file:
+
+```properties
+org.gradle.jvmargs=-Xmx4096m -Dfile.encoding=UTF-8
+```
+
 ## Installation 
 
 Add the jitpack.io repository to `settings.gradle`
 
 ```kotlin
 pluginManagement {
-    includeBuild("patcher")
 
     repositories {
         ...
