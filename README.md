@@ -2,6 +2,8 @@
 
 A Gradle plugin for Android projects that converts APK files to JAR libraries and automatically adds them as compile only dependencies to your project.
 
+
+[![](https://jitpack.io/v/dev.marcelsoftware/ApkLink-Gradle.svg)](https://jitpack.io/#dev.marcelsoftware/ApkLink-Gradle)
 ## Memory Requirements
 
 Due to the resource-intensive nature of APK processing, it's recommended to allocate at least 4GB of memory to Gradle:
@@ -22,7 +24,14 @@ pluginManagement {
     repositories {
         ...
         maven(url = "https://jitpack.io")
+    }
 
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.toString() == "dev.marcelsoftware.apklink-gradle") {
+                useModule("dev.marcelsoftware:ApkLink-Gradle:${requested.version}")
+            }
+        }
     }
 }
 ```
