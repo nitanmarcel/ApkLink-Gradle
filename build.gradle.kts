@@ -4,8 +4,13 @@ plugins {
     id("maven-publish")
 }
 
-group = "dev.marcelsoftware.apklink"
-version = "1.0.0"
+val projectVersion = "1.0.1"
+val projectGroup = "dev.marcelsoftware.apklink"
+val pluginId = "$projectGroup-gradle"
+
+group = projectGroup
+version = projectVersion
+
 
 repositories {
     mavenCentral()
@@ -27,9 +32,10 @@ kotlin {
 
 gradlePlugin {
     plugins {
-        register("apklink") {
-            id = "dev.marcelsoftware.apklink-gradle"
-            implementationClass = "dev.marcelsoftware.apklink.ApkLinkPlugin"
+        register(pluginId) {
+            version = projectVersion
+            id = pluginId
+            implementationClass = "$projectGroup.ApkLinkPlugin"
         }
     }
 }

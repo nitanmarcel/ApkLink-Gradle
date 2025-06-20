@@ -27,21 +27,6 @@ pluginManagement {
 }
 ```
 
-Add resolution strategy for the plugin
-
-```kotlin
-pluginManagement {
-    ...
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.toString() == "dev.marcelsoftware.apklink-gradler") {
-                useModule("com.github.nitanmarcel:ApkLink-Gradle:${requested.version}")
-            }
-        }
-    }
-}
-```
-
 Apply the plugin in your `build.gradle.kts`
 
 ```kotlin
