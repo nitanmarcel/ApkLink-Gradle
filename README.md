@@ -39,7 +39,7 @@ pluginManagement {
 Apply the plugin in your `build.gradle.kts`
 
 ```kotlin
-id("dev.marcelsoftware.apklink-gradle") version "1.0.0"
+id("dev.marcelsoftware.apklink-gradle") version "1.0.2"
 ```
 
 ## Usage
@@ -86,12 +86,6 @@ apklink {
     }
 }
 ```
-
-### Processing the APK and Using the Dependency
-
-1. Run the processApk task to convert the APK to a JAR
-2. After the task completes, trigger a Gradle sync in your IDE to make the new dependency available.
-> **Important**: Whenever you change the APK source or need to update the JAR, you must run the `processApk` task again and resync your project.
 
 ## License
 MIT License

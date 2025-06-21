@@ -4,7 +4,7 @@ plugins {
     id("maven-publish")
 }
 
-val projectVersion = "1.0.1"
+val projectVersion = "1.0.2"
 val projectGroup = "dev.marcelsoftware.apklink"
 val pluginId = "$projectGroup-gradle"
 
