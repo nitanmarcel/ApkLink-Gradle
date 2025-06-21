@@ -23,6 +23,7 @@ open class ApkLinkConfig {
     var outputFile: File? = null
     var apkPureConfig: ApkPureConfig? = null
     var urlConfig: UrlConfig? = null
+    var enabled: Boolean = true
 
     fun apkpure(action: ApkPureConfig.() -> Unit) {
         apkPureConfig = ApkPureConfig().apply(action)
@@ -138,34 +139,51 @@ class ApkLinkPlugin : Plugin<Project> {
         target.afterEvaluate {
             logger.info("Evaluating apklink configuration for project: ${target.name}")
 
-            val apkFile = when {
-                extension.apkPureConfig != null -> {
-                    val config = extension.apkPureConfig!!
-                    val packageName = config.packageName
-                        ?: throw RuntimeException("packageName must be specified in apkpure block")
+            if (!extension.enabled) {
+                logger.info("ApkLink plugin is disabled for this project")
+                return@afterEvaluate
+            }
 
-                    val apkPureSource = ApkPureSource(packageName, config.version)
-                    val downloadDir = File(target.buildDir, "apkpure-downloads")
-                    apkPureSource.downloadApk(downloadDir)
+            if (extension.apkFile == null && extension.apkPureConfig == null && extension.urlConfig == null) {
+                logger.info("No APK source configuration found, skipping ApkLink setup")
+                return@afterEvaluate
+            }
+
+            val apkFile = try {
+                when {
+                    extension.apkPureConfig != null -> {
+                        val config = extension.apkPureConfig!!
+                        val packageName = config.packageName
+                            ?: throw RuntimeException("packageName must be specified in apkpure block")
+
+                        val apkPureSource = ApkPureSource(packageName, config.version)
+                        val downloadDir = File(target.buildDir, "apkpure-downloads")
+                        apkPureSource.downloadApk(downloadDir)
+                    }
+
+                    extension.urlConfig != null -> {
+                        val config = extension.urlConfig!!
+                        val url = config.url
+                            ?: throw RuntimeException("url must be specified in url block")
+
+                        val urlSource = UrlSource(url, config.fileName)
+                        val downloadDir = File(target.buildDir, "url-downloads")
+                        urlSource.downloadApk(downloadDir)
+                    }
+
+                    extension.apkFile != null -> {
+                        extension.apkFile!!
+                    }
+
+                    else -> {
+                        logger.warn("No APK source configuration found, skipping ApkLink setup")
+                        return@afterEvaluate
+                    }
                 }
-
-                extension.urlConfig != null -> {
-                    val config = extension.urlConfig!!
-                    val url = config.url
-                        ?: throw RuntimeException("url must be specified in url block")
-
-                    val urlSource = UrlSource(url, config.fileName)
-                    val downloadDir = File(target.buildDir, "url-downloads")
-                    urlSource.downloadApk(downloadDir)
-                }
-
-                extension.apkFile != null -> {
-                    extension.apkFile!!
-                }
-
-                else -> {
-                    throw RuntimeException("Either apkFile, apkpure, or url must be specified in apklink block")
-                }
+            } catch (e: Exception) {
+                logger.error("Failed to configure APK source: ${e.message}")
+                logger.error("APK Link plugin configuration failed, continuing build without APK dependency")
+                return@afterEvaluate
             }
 
             logger.info("Configured APK file: ${apkFile.absolutePath}")
